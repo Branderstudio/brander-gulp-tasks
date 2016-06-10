@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "using in Brander",
   "main": "gulpfile.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Branderstudio/brander-gulp-tasks.git"
+  },
   "engines": {
     "node": ">=6.2.0"
   },
