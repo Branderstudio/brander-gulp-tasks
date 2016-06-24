@@ -3,7 +3,6 @@
 const _ = require('lodash');
 const pathInner = require('path');
 const watch = require('gulp-watch');
-const chalk = require('chalk');
 const uglify = require('gulp-uglify');
 const twigCompile = require('twig-compile');
 
@@ -18,10 +17,10 @@ module.exports = function dependenciesJs(gulp, conf) {
     if (conf.twig) {
       twigCompile.setTwig(conf.twig);
     }
-    var watchBasePaths = [];
+    const watchBasePaths = [];
     conf.options.compileOptions.lookPaths = [];
 
-    _.each(conf.paths, function (v, dest) {
+    _.each(conf.paths, (v, dest) => {
       if (!_.isArray(v)) {
         conf.paths[dest] = [v];
       }
@@ -87,7 +86,3 @@ module.exports = function dependenciesJs(gulp, conf) {
 
   return tasks;
 };
-
-
-
-
