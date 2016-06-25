@@ -3,7 +3,6 @@
 const defaultGulp = require('gulp');
 const _ = require('lodash');
 const defaultTwig = require('twig');
-const rjs = require('gulp-requirejs-optimize');//todo
 
 const env = process.env.NODE_ENV || process.env.SYMFONY_ENV || 'dev';
 const defaultConfig = {
@@ -12,37 +11,40 @@ const defaultConfig = {
     js:          {
       minify:     env !== 'dev',
       paths:      {
-        '': ['./app/Resources/frontend'], // "./" вначале - текущая папка
-        // 'js': ['frontend/javascripts'], // ничего вначале - текущая папка
-        //'подПапка': ['./src/Rt/Bundle/AdminBundle/Resources/frontend'],//Друг, исправь меня!
+        '': ['frontend', './app/Resources/frontend'], // "./" вначале - текущая папка
+        // 'js': ['frontend/javascripts'], // или ничего вначале - текущая папка
+        //'подПапка': х'./src/Rt/Bundle/AdminBundle/Resources/frontend'], // в 'подПапка' положется содержимое
       },
-      extensions: ['js', 'es6'],
+      extensions: ['js', 'es6'], // какие файлы искать
       babel:      {
 
         /*
+         возле своих js файлов стоит создавать .babelrc в котором и писать конфигурацию по их транспайлингу
          USE .babelrc INSTEAD
          */
       },
+      // DEST_PATH:  './public/dependencies/js' // можно явно указать относительно какой папки создавать 'подПапка'
     },
     views:       {
       paths:      {
-        '': ['/views'], // "/" вначале - текущая папка TODO
-        //'подПапка/': ['/src/Rt/Bundle/AdminBundle/Resources/frontend/views',],//Друг, исправь меня!
+        '': ['views', './app/Resources/frontend'], // "./" вначале - текущая папка
+        //'подПапка': ['./src/Rt/Bundle/AdminBundle/Resources/frontend/views',], // Всё аналогично
       },
       extensions: ['twig'],
       options:    {
         module:         'amd',
         twig:           'twig',
         compileOptions: {
-          viewPrefix: 'views/',
+          viewPrefix: 'templates/',
         },
       },
-      twig:       defaultTwig,
+      twig:       defaultTwig, // можно и нужно установить свой twig, для сборки он будет модифицирован
+      // DEST_PATH:  './public/dependencies/js' // аналогично
     },
     stylesheets: {
       minify:       env !== 'dev',
       paths:        {
-        '': './app/Resources/frontend',
+        '': ['frontend', './app/Resources/frontend'],
       },
       extensions:   ['scss', 'css'],
       autoprefixer: [
@@ -54,13 +56,13 @@ const defaultConfig = {
     },
     fonts:       {
       paths:      {
-        '': './app/Resources/frontend',
+        '': ['frontend', './app/Resources/frontend'],
       },
       extensions: ['eot', 'svg', 'ttf', 'woff', 'woff2'],
     },
     images:      {
       paths:      {
-        '': './app/Resources',
+        '': ['frontend', './app/Resources/frontend'],
       },
       extensions: ['svg', 'jpg', 'jpeg', 'png', 'gif'],
     },
@@ -72,57 +74,85 @@ const defaultConfig = {
       cwd:              '.',
     },
     cp:          {
+      files: {
+        'node_modules/twig/twig.min.js': 'twig',
+        /*
+         files: {'node_modules/twig/twig.min.js': 'twig'},     twig.min.js -> twig.js
+         files: {'node_modules/twig/twig.min.js': 'twig/'},    twig.min.js -> twig/twig.min.js
+         files: {'node_modules/twig/twig.min.js': 'twig/t'},   twig.min.js -> twig/t.js
+         */
+      },
+      // DEST_PATH: './public/dependencies/js'
+    },
+  },
+  build:        {
+    rjs:    {
+      entryPoints:    {
+        'page/testFrontend': {/* out: 'js/page/testFrontend__.js' */}, //сюда можно вписать конфиг
+      },
+      defaultOptions: {
 
-      /*
-       files: {'node_modules/twig/twig.min.js': 'twig'},     twig.min.js -> twig.js
-       files: {'node_modules/twig/twig.min.js': 'twig/'},    twig.min.js -> twig/twig.min.js
-       files: {'node_modules/twig/twig.min.js': 'twig/t'},   twig.min.js -> twig/t.js
-       */
-      files: {'node_modules/twig/twig.min.js': 'js/twig'},
+        /** @link https://github.com/requirejs/r.js/blob/master/build/example.build.js */
+        /** @link https://github.com/jlouns/gulp-requirejs-optimize#differences-from-rjs */
+        mainConfigFile: './public/dependencies/js/config/require.js', // конфиг рекваер жс
+        // stubModules: ['text', 'json', 'json!/translations'],
+        // inlineText: true,
+        // pragmas: {
+        //   excludeRequireCss: true
+        // }
+        inlineJSON:     false,
+        // inlineTWIG: false,
+        // appDir: 'public',
+        // out:            `js/page/testFrontend__.js`, // полезно сделать для конкретного файла
+      },
+      // DEST_PATH:      './public/dependencies/js',
+    },
+    concat: {
+      entryPoints: {
+        'require.js': [
+          'public/dependencies/js/require.js',
+          'public/dependencies/js/config/require.js',
+          'public/dependencies/js/config/boost.js',
+        ],
+      },
+      options:     {newLine: ';\n'},
+      // DEST_PATH:   './public/dependencies/js',
     },
   },
   browsersync:  {
     watch: [
-      __dirname + '../../Resources/frontend/**',
+      'views/*.twig',
+      'src/**/Resources/frontend/**/*',
+      'web/assets/**/*',
     ],
-    WAIT:  800,
-  },
-  DEST_PATH:    './web/assets',
-};
-/* TODO
- // Если нужно подключить СИМОФНИ проект, расскоментировать
- const FRONTEND_MAPPER_BUNDLE_SRC = '../../../vendor/werkint/frontend-mapper-bundle/src';
- var symfonyConfig = require(`${FRONTEND_MAPPER_BUNDLE_SRC}/Resources/gulp/symfony-task`)('werkint:frontendmapper:config');
- //replace native bower.json
- require(`${FRONTEND_MAPPER_BUNDLE_SRC}/Resources/gulp/bower`)(symfonyConfig.bower);
- var symfonyJsPoints = require(`${FRONTEND_MAPPER_BUNDLE_SRC}/Resources/gulp/symfony-task`)('werkint:frontendmapper:dump');
- //merge js paths
- (function mergeJsPaths() {
- var configPaths = config.dependencies.js.paths;
- console.log(symfonyJsPoints)
- console.log(configPaths)
- _.each(symfonyJsPoints, function (v, k) {
- if (configPaths[v.name]) {
- if (!_.isArray(configPaths[v.name])) {
- configPaths[v.name] = [configPaths[v.name]]
- }
- } else {
- configPaths[v.name] = [];
- }
- configPaths[v.name].push(v.path);
- });
- console.log("\n\n", config.dependencies.js.paths)
- })();
- */
 
+    /*
+     options: {
+     https: {
+     key:  path.join(__dirname, 'config', 'keys', 'server', 'privkey.pem'),
+     cert: path.join(__dirname, 'config', 'keys', 'server', 'fullchain.pem')
+     }
+     },
+     */
+    WAIT:  800, // ms
+  },
+  generate:     {
+    assets: {
+      // to: './fixtures/assets.json' // -> create file with hash string
+    },
+  },
+  DEST_PATH:    './web/assets', // default destination
+};
 
 const assets = require('./task/assets');
 const bower = require('./task/bower');
 const browserSync = require('./task/browserSync');
+const build = require('./task/build');
 const cp = require('./task/cp');
 const fonts = require('./task/fonts');
 const img = require('./task/img');
 const js = require('./task/js');
+const rjs = require('./task/r');
 const style = require('./task/style');
 const twig = require('./task/twig');
 
@@ -134,14 +164,17 @@ const twig = require('./task/twig');
  */
 function lib(gulp = defaultGulp, config = defaultConfig) {
   _.each(config.dependencies, (conf) => _.defaults(conf, {DEST_PATH: config.DEST_PATH}));
+  _.each(config.build, (conf) => _.defaults(conf, {DEST_PATH: config.DEST_PATH}));
 
   _.each(assets(gulp, config.generate.assets), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
   _.each(bower(gulp, config.dependencies.bower), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
   _.each(browserSync(gulp, config.browsersync), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
+  _.each(build(gulp, config.build.concat), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
   _.each(cp(gulp, config.dependencies.cp), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
   _.each(fonts(gulp, config.dependencies.fonts), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
   _.each(img(gulp, config.dependencies.images), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
   _.each(js(gulp, config.dependencies.js), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
+  _.each(rjs(gulp, config.build.rjs), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
   _.each(style(gulp, config.dependencies.stylesheets), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
   _.each(twig(gulp, config.dependencies.views), ([taskName, deps, cb]) => gulp.task(taskName, deps, cb));
 
@@ -160,8 +193,8 @@ function lib(gulp = defaultGulp, config = defaultConfig) {
     'bower:dependencies',
     'dependencies:js:build',
     'dependencies:stylesheets:build',
-    'dependencies:views:build', // todo upgrade
-    'dependencies:cp:build', // todo
+    'dependencies:views:build',
+    'dependencies:cp:build',
     'generate:assets',
     'dependencies:fonts:build',
     'dependencies:images:build',
@@ -177,8 +210,8 @@ lib.cp = cp;
 lib.fonts = fonts;
 lib.img = img;
 lib.js = js;
+lib.rjs = rjs;
 lib.style = style;
 lib.twig = twig;
 
 module.exports = lib;
-

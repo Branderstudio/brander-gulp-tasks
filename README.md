@@ -56,3 +56,13 @@ OR
 ```bash
 env SYMFONY_ENV=prod gulp
 ```
+
+### optimize
+
+```bash
+env NODE_ENV=prod gulp build
+```
+Do not use without minifing, unless you don't use NODE_ENV
+```bash
+gulp build
+```
