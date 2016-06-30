@@ -61,10 +61,10 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^2.11.1",
-    "eslint-config-airbnb-base": "^3.0.1",
-    "eslint-config-meetic": "^2.0.0",
-    "eslint-plugin-import": "^1.8.1"
+    "eslint": "^2.13.1",
+    "eslint-config-brander": "0.0.2",
+    "eslint-import-resolver-node": "^0.2.1",
+    "eslint-plugin-import": "^1.9.2"
   },
   "peerDependencies": {
     "twig": "^0.9.5",
