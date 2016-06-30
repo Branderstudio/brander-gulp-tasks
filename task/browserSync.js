@@ -9,7 +9,7 @@ module.exports = (gulp, conf) => [
     [],
     function browserSync() {
       browserSyncInner.create();
-      browserSyncInner.init(conf.options);
+      browserSyncInner.init(conf.options || {});
       return gulp.watch(conf.watch).on(
         'change',
         _.debounce(browserSyncInner.reload, conf.WAIT)

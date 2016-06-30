@@ -23,12 +23,14 @@ module.exports = function dependenciesJs(gulp, conf) {
   tasks.push([
     'generate:assets',
     function exportBuildTime() {
-      const assets = Math.round(Date.now() / MS_TO_ASSETS_DIVIDER - START_FROM).toString(RADIX);
-      return new Promise((res, rej) =>
-        fs.writeFile(conf.to, JSON.stringify(assets), {}, (err) =>
+      return new Promise((res, rej) => {
+        const assets = Math.round(Date.now() / MS_TO_ASSETS_DIVIDER - START_FROM).toString(RADIX);
+        const format = conf.format || '"%hash%"';
+        let out = format.replace('%hash%', assets)
+        fs.writeFile(conf.to, out, {}, (err) =>
           err ? rej(err) : res()
         )
-      );
+      });
     },
   ]);
 

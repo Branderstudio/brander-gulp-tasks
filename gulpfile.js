@@ -139,6 +139,7 @@ const defaultConfig = {
   generate:     {
     assets: {
       // to: './fixtures/assets.json' // -> create file with hash string
+      // format: 'parameters:\n  assets_version: "%hash%"', // -> Symfony compatible format
     },
   },
   DEST_PATH:    './web/assets', // default destination
