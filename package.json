@@ -1,6 +1,6 @@
 {
   "name": "brander-gulp-tasks",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "using in Brander",
   "main": "gulpfile.js",
   "files": [
@@ -57,11 +57,11 @@
     "gulp-watch": "^4.3.6",
     "lodash": "^4.13.1",
     "main-bower-files": "^2.13.1",
-    "twig-compile": "^0.1.3"
+    "twig-compile": "^0.2.0"
   },
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^2.13.1",
+    "eslint": "^3.0.1",
     "eslint-config-brander": "0.0.2",
     "eslint-import-resolver-node": "^0.2.1",
     "eslint-plugin-import": "^1.9.2"

@@ -18,7 +18,7 @@ module.exports = function dependenciesJs(gulp, conf) {
       twigCompile.setTwig(conf.twig);
     }
     const watchBasePaths = [];
-    conf.options.compileOptions.lookPaths = [];
+    const lookPaths = conf.options.compileOptions.lookPaths = {};
 
     _.each(conf.paths, (v, dest) => {
       if (!_.isArray(v)) {
@@ -26,7 +26,11 @@ module.exports = function dependenciesJs(gulp, conf) {
       }
       conf.paths[dest] = _.reduce(conf.paths[dest], (result, p) => {
         const path = pathInner.resolve(p);
-        conf.options.compileOptions.lookPaths.push(path);// ?!
+        if (lookPaths[dest]) {
+          lookPaths[dest].push(path);
+        } else {
+          lookPaths[dest] = [path];
+        }
         watchBasePaths.push({path, dest});
         return _.union(result, helpers.getPaths(path, conf.extensions));
       }, []);
