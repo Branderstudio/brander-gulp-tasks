@@ -52,9 +52,9 @@ module.exports = function dependenciesCss(gulp, conf) {
     return new Promise((resolve, reject) => {
       const rejecting = helpers.rejector(reject);
       let pipe = gulp.src(paths, {base})
-        .pipe(sourcemaps.init())
         .pipe(progeny(config.progeny))
         .on('error', rejecting)
+        .pipe(sourcemaps.init())
         .pipe(sass())
         .on('error', rejecting)
         .pipe(autoprefixer(config.autoprefixer))
