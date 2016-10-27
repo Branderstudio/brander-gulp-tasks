@@ -3,6 +3,17 @@
 This is set of gulp tasks for common usage. It is wrapper over popular gulp things.
 It is flexible reusable and easy configurable.
 
+## What it can
+
+1. create hash of build time in custom format
+2. install bower with custom configuration
+3. browser sync
+4. requirejs build, optimize, concat
+5. just copy file from one place to another
+6. copy (for now) fonts, images
+7. process SCSS, autoprefixer
+8. build TWIG templates for twigjs
+
 ## install
 
 ```bash
