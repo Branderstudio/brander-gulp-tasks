@@ -77,3 +77,48 @@ Do not use without minifing, unless you don't use NODE_ENV
 ```bash
 gulp build
 ```
+
+#### Advanced require js example
+
+```js
+  build:        {
+    rjs:    {
+      entryPoints:    {
+        'amd/entryPointAdmin':           {
+          stubModules:    [], // there is no stub modules for "Admin"
+        },
+        'amd/salonEntryPoint':           {},
+        'amd/loginEntryPoint':           {},
+        'amd/entryPointChangePassword':  {},
+        'amd/entryPointRecoverPassword': {},
+      },
+      defaultOptions: {
+        mainConfigFile: './public/compiled/js/amd/require.js.config.js',
+        stubModules:    ['toastr'],
+        // inlineText: true,
+        // pragmas: {
+        //   excludeRequireCss: true,
+        // },
+        inlineJSON:     false,
+        optimize:       'none',
+        // makes stub modules dynamically loaded
+        onBuildWrite(moduleName, path, contents) {
+          return contents.replace(/define\('[^']+',\{}\);/g, '');
+        },
+        // inlineView:     false,
+        // inlineTWIG:     false,
+      },
+      DEST_PATH:      './public/compiled/js',
+    },
+    concat: {
+      entryPoints: {
+        'js/require_build.js': [
+          'public/compiled/js/require.js',
+          'public/compiled/js/amd/require.js.config.js',
+          'public/compiled/js/amd/boost.js',
+        ],
+      },
+      options:     {newLine: ';\n'},
+    },
+  },
+```
