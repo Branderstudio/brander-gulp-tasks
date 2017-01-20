@@ -25,7 +25,7 @@ module.exports = function rjsTasks(gulp, conf) {
         return new Promise((resolve, reject) => {
           const rejecting = helpers.rejector(reject);
           return gulp.src(file, {base: pathInner.resolve(opt.DEST_PATH || conf.DEST_PATH)})
-            .pipe(logger)
+            // .pipe(logger)
             .pipe(rjs(opt))
             .on('error', rejecting)
             .pipe(uglify())
