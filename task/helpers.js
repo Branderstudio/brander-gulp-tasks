@@ -6,6 +6,7 @@
  */
 
 const pathInner = require('path');
+const cp = require('child_process');
 const gulpPrint = require('gulp-print');
 const _ = require('lodash');
 const fs = require('fs');
@@ -133,6 +134,27 @@ function rf(fileName, options = {encoding: 'utf8'}) {
   );
 }
 
+function isModuleInstalledLocally(moduleName) {
+  return new Promise((resolve) => {
+    const modulesListGetProcess = cp.spawn(
+      'npm',
+      ['ls', moduleName, '-parseable=true', '-link=true', '--depth=0'],
+      {stdio: 'pipe', cwd: process.cwd(), env: process.env}
+    );
+
+    let modulesList = '';
+
+    modulesListGetProcess.stdout.on('data', data => {
+      modulesList = modulesList + data.toString();
+    });
+
+    // unmeet peer dependency exits with non-zero code, ignore it
+    modulesListGetProcess.on('close', () => {
+      resolve(!!modulesList)
+    })
+  })
+}
+
 const helpers = {
   getPaths,
   logger,
@@ -143,6 +165,7 @@ const helpers = {
   watchAutoHandle,
   wf,
   rf,
+  isModuleInstalledLocally,
 };
 
 module.exports = helpers;

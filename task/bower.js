@@ -59,11 +59,13 @@ module.exports = function dependenciesJs(gulp, conf) {
           '--allow-root',
           '--production',
         ];
-        cp.spawn(
-          'bower',
-          args,
-          {stdio: 'inherit', cwd: conf.cwd}
-        ).on('close', (code) => code ? reject() : resolve());
+        helpers.isModuleInstalledLocally('bower').then(function (bowerExists) {
+          cp.spawn(
+            bowerExists ? './node_modules/.bin/bower' : 'bower',
+            args,
+            {stdio: 'inherit', cwd: conf.cwd}
+          ).on('close', (code) => code ? reject() : resolve());
+        }).catch(reject);
       });
     },
   ]);
