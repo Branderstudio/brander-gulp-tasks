@@ -1,6 +1,6 @@
 {
   "name": "brander-gulp-tasks",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "using in Brander",
   "main": "gulpfile.js",
   "files": [
